@@ -1,5 +1,33 @@
+from typing import List
 import tensorflow as tf
 from commons import mnist
 
 data = mnist()
 
+x_input = tf.placeholder(tf.float32, [None, 784]) # 28 * 28 pixels
+y_input = tf.placeholder(tf.float32, [None, 10])  # number of classes
+
+def layer(input, shape: List[int], activation, name: str):
+    with tf.name_scope(name):
+        W = tf.Variable(tf.random_uniform(shape) * 0.01)
+        b = tf.Variable(tf.random_uniform([shape[-1]]) * 0.01)
+        res = activation(tf.matmul(input, W) + b)
+    return res
+
+hidden = layer(x_input, [784, 625], tf.nn.sigmoid, 'hidden')
+y = layer(hidden, [625, 10], lambda _: _, 'output')
+
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_input, logits=y))
+train = tf.train.GradientDescentOptimizer(0.5).minimize(cost)
+
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+while data.train.epochs_completed < 100:
+    x_batch, y_batch = data.train.next_batch(100)
+    sess.run(train, feed_dict={x_input: x_batch, y_input: y_batch})
+
+correct_prediction = tf.equal(tf.argmax(y_input, 1), tf.argmax(y, 1))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+print(sess.run(accuracy, feed_dict={x_input: data.test.images, y_input: data.test.labels}))
+
+sess.close() # ~98.0%
