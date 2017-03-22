@@ -59,4 +59,4 @@ correct_prediction = tf.equal(tf.argmax(y_input, 1), tf.argmax(y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 print(sess.run(accuracy, {x_input: data.test.images, y_input: data.test.labels, conv_dropout: 1., fc_dropout: 1.}))
 
-sess.close() # ~99.4%
+sess.close() # ~99.5%
