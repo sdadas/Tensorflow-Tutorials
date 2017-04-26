@@ -9,9 +9,9 @@ from keras import backend as K
 from PIL import Image
 import numpy as np
 
-def plot_regression(X, Y, w):
+def plot_regression(X, Y, a, b):
     plt.scatter(X, Y)
-    plt.plot(X, X * w, 'r')
+    plt.plot(X, X * a + b, 'r')
     plt.show()
 
 def mnist() -> Datasets:
